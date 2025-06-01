@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 8001
 
 # Chạy Uvicorn (vì bạn dùng reload nên dùng uvicorn thay vì gunicorn)
-CMD ["uvicorn", "app.themovie.main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "2", "--timeout-keep-alive", "100", "--reload"]
+CMD ["uvicorn", "app.themovie.main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "4", "--timeout-keep-alive", "100", "--reload"]
