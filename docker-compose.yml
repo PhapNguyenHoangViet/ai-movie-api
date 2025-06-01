@@ -11,29 +11,7 @@ services:
     env_file:
       - ./app/themovie/.env
     ports:
-      - "8000:8000"
-
-  db_postgres:
-    container_name: db_postgres_container
-    image: postgres:12
+      - "8001:8001"
+    runtime: nvidia
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - PGDATA=/var/lib/postgresql/data/pgdata
-    volumes:
-      - app-db-movie-data:/var/lib/postgresql/data/pgdata
-    ports:
-      - "5432:5432"
-    restart: always
-
-  mongodb:
-    container_name: db_mongo_container
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - data_mongodb:/mongo
-
-volumes:
-  app-db-movie-data:
-  data_mongodb:
+      - NVIDIA_VISIBLE_DEVICES=all

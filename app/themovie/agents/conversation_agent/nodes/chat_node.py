@@ -34,63 +34,17 @@ async def chat_node(
         temperature=CONVERSATION_CHAT_TEMPERATURE,
         top_p=CONVERSATION_CHAT_TOP_P,
     )
-    conversation_id = state.conversation_id
-    node_name = config.get("metadata", {}).get("langgraph_node")
     try:
-        async with get_db_session_with_context() as session:
-            messages = (
-                await Message.find(
-                    {
-                        "conversation_id": UUID(conversation_id),
-                        "type": {
-                            "$in": [
-                                MessageTypes.HUMAN,
-                                MessageTypes.AI,
-                                MessageTypes.HIDDEN,
-                            ]
-                        },
-                    },
-                    session=session,
-                )
-                .sort([("created_at", 1)])
-                .limit(MESSAGES_LIMIT)
-                .to_list()
-            )
-
-        user_input = messages[-1].message if messages else ""
-        user_prompt = user_prompt_chat_node(user_input)
-
-        context_messages = [
-            (
-                HumanMessage(content=msg.message)
-                if msg.type == MessageTypes.HUMAN
-                else AIMessage(content=msg.message)
-            )
-            for msg in messages[:-1]
-        ]
-        logging.info(
-            f"[CONVERSATION_CHAT_NODE] - LENGTH_OF_CONTEXT_MESSAGES: {len(context_messages)}, conversation_id: {conversation_id}"
+        user_prompt = state.messages[-1]
+        system_prompt = system_prompt_chat_node()
+        output = await llm.ai_ainvoke(
+            [SystemMessage(content=(system_prompt))]
+            + [HumanMessage(content=user_prompt)]
         )
-        system_prompt = SystemMessage(content=(system_prompt_chat_node()))
-
-        async for chunk in llm.ai_astream(
-            [system_prompt] + context_messages + [HumanMessage(content=user_prompt)]
-        ):
-            writer(
-                ConversationStreamWriter(
-                    messages=[llm.ai_chunk_stream(chunk)],
-                    node_name=node_name,
-                    type=MessageTypes.AI,
-                ).to_dict()
-            )
-
-        state.type = MessageTypes.HIDDEN
-        state.messages = ["[END]"]
-        state.node_name = node_name
-
+        state.next_node = output.content
     except Exception as e:
         logging.error(
-            f"[CONVERSATION_CHAT_NODE] - Error in chat_node: {str(e)}, conversation_id: {conversation_id}"
+            f"[CONVERSATION_CHAT_NODE] - Error in chat_node: {str(e)}, conversation_id: {state.conversation_id}"
         )
         raise StreamingException(config["metadata"].get("langgraph_node"))
 

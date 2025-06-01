@@ -42,7 +42,7 @@ class PostgreSQLSingleton:
                 )
                 self.num_retries = 3
 
-                logging.info(
+                print(
                     "POSTGRES_CONNECTION - Database connection established successfully"
                 )
             except Exception as e:
@@ -66,7 +66,7 @@ class PostgreSQLSingleton:
         if self._connection:
             self._connection.close()
             self._connection = None
-            logging.info("POSTGRES_CONNECTION - Database connection closed")
+            print("POSTGRES_CONNECTION - Database connection closed")
 
     def execute_query(
         self,

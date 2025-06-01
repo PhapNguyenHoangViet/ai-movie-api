@@ -17,12 +17,18 @@ CONVERSATION_CHAT_TEMPERATURE = os.getenv("CONVERSATION_CHAT_TEMPERATURE")
 AWS_REGION = os.getenv("AWS_REGION")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_KNOWLEDGEBASE_REGION = os.getenv("AWS_KNOWLEDGEBASE_REGION")
+AWS_KNOWLEDGEBASE_ACCESS_KEY_ID = os.getenv("AWS_KNOWLEDGEBASE_ACCESS_KEY_ID")
+AWS_KNOWLEDGEBASE_SECRET_ACCESS_KEY = os.getenv("AWS_KNOWLEDGEBASE_SECRET_ACCESS_KEY")
 
 MODEL_MAPPING = {
     # OpenAI models
     "gpt-4o": "gpt-4o",
     # Claude models
+    "claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0",
     "claude-37-sonnet": "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+    "claude-instant-v1": "anthropic.claude-instant-v1",
+    "claude-3-5-sonnet": "anthropic.claude-3-5-sonnet-20240620-v1:0",
 }
 
 # Amazon Bedrock Configuration
@@ -32,6 +38,13 @@ BEDROCK_RT = boto3.client(
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
     endpoint_url=os.getenv("BEDROCK_ENDPOINT_URL", None),
+)
+
+BEDROCK_KNOWLEDGEBASE = boto3.client(
+    "bedrock-agent-runtime",
+    region_name=AWS_KNOWLEDGEBASE_REGION,
+    aws_access_key_id=AWS_KNOWLEDGEBASE_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_KNOWLEDGEBASE_SECRET_ACCESS_KEY,
 )
 LLM_MAX_TOKENS = os.getenv("LLM_MAX_TOKENS")
 LLM_TOP_P = os.getenv("LLM_TOP_P")
@@ -52,3 +65,5 @@ PG_USER = os.getenv("PG_USER")
 PG_HOST = os.getenv("PG_HOST")
 PG_PASSWORD = os.getenv("PG_PASSWORD")
 PG_PORT = os.getenv("PG_PORT")
+
+KNOWLEDGEBASE_ID = os.getenv("KNOWLEDGEBASE_ID")

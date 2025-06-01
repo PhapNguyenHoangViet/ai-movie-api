@@ -29,4 +29,5 @@ class ResponseStatus(str, Enum):
 
 class ConversationRequest(BaseModel):
     conversation_id: Optional[str] = None
+    user_id: str
     message: Optional[str] = None

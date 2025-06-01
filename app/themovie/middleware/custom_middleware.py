@@ -14,14 +14,14 @@ class CustomMiddleware(BaseHTTPMiddleware):
             "path": request.url.path,
             "origin": request.headers.get("Origin"),
         }
-        logging.info(f"REQUEST: {data}")
+        print(f"REQUEST: {data}")
 
         # Process request
         response = await call_next(request)
 
         # Log response
         process_time = time.time() - start_time
-        logging.info(
+        print(
             f"RESPONSE: path={request.url.path} status_code={response.status_code} duration={process_time:.4f}s"
         )
 
